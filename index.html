@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+
+    <title>Manual Farmacêutico - Real Hospital Português</title>
+
+    <!-- Data Tables CSS-->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jq-3.6.0/dt-1.11.3/datatables.min.css">
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.datatables.net/searchbuilder/1.2.2/css/searchBuilder.dataTables.min.css">
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.datatables.net/datetime/1.1.1/css/dataTables.dateTime.min.css">
+
+    <!-- Estilo personalizado -->
+    <style>
+        body {
+            font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 20px;
+            color: #333;
+        }
+
+        h1 {
+            color: #005b8f;
+            font-size: 1.6em;
+        }
+
+        p {
+            max-width: 900px;
+            line-height: 1.6;
+        }
+
+        img {
+            height: 60px;
+            margin-bottom: 20px;
+        }
+
+        mark {
+            background-color: #fffa8b;
+            font-weight: bold;
+        }
+
+        table.dataTable thead th {
+            background-color: #005b8f;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            font-size: 14px;
+        }
+
+        table.dataTable {
+            border-collapse: collapse;
+            border-radius: 6px;
+            overflow: hidden;
+            background-color: white;
+        }
+
+        table.dataTable tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        table.dataTable tbody tr:hover {
+            background-color: #e1f0ff;
+        }
+
+        table.dataTable td,
+        table.dataTable th {
+            padding: 10px;
+            vertical-align: top;
+            font-size: 13px;
+        }
+
+        .dataTables_wrapper {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background-color: #fff;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .dataTables_length select,
+        .dataTables_filter input {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 5px;
+        }
+
+        .dataTables_filter label {
+            font-weight: 500;
+        }
+    </style>
+
+    <!-- JQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- DataTables -->
+    <script src="https://cdn.datatables.net/v/dt/jq-3.6.0/dt-1.11.3/datatables.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/searchbuilder/1.2.2/js/dataTables.searchBuilder.min.js"></script>
+    <script src="https://cdn.datatables.net/datetime/1.1.1/js/dataTables.dateTime.min.js"></script>
+
+    <!-- Mark.js + Search Highlight -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js"></script>
+    <script
+        src="https://cdn.datatables.net/plug-ins/1.11.3/features/searchHighlight/dataTables.searchHighlight.min.js"></script>
+
+
+</head>
+
+<body>
+
+    <img src="https://meds.cognys.com/assets/logo_meds-DdpIqYnN.png" alt="Logo Cognys Meds">
+
+    <h1>Manual Farmacêutico - Real Hospital Português</h1>
+
+    <p><strong>IMPORTANTE:</strong> esta tabela pode demorar para carregar. Após abri-la, aguarde alguns segundos.</p>
+    <p>Instruções:</p>
+    <ol>
+        <li>Use o filtro (Search) acima da tabela para buscar o termo que deseja (ex: Varfar,
+            Ateno, Finas, etc).</li>
+    </ol>
+    <p>Versão Beta. Melhorias serão feitas ao longo do tempo.</p>
+
+
+
+    <table id="table_id" class="display responsive" style="width:100%">
+        <!-- table class="display responsive nowrap" -->
+        <!-- ainda assim tem uma função Expand quando clica na 1a coluna-->
+        <!-- melhor conversor excel para html é https://tableconvert.com/excel-to-html; incluir table head -->
+        <!-- =CONCATENAR("<a target='_blank' href='";B1;"'>Link</a>") para criar os links -->
+        <!-- dar id para a table -->
+        <thead>
+            <tr>
+                <th>Descricao Medicamento</th>
+                <th>Substancias</th>
+                <th>Indicacoes</th>
+                <th>Doses</th>
+                <th>Info Geral</th>
+                <th>Link Cognys Micromedex</th>
+                <th>Esquema</th>
+                <th>Descricao Esquema</th>
+                <th>Codigo Medicamento</th>
+                <th>Codigo Produto</th>
+                <th>Descricao Produto</th>
+                <th>GCR</th>
+                <th>GFC</th>
+                <th>Nome ENG</th>
+                <th>Nome Via</th>
+                <th>Nome Forma</th>
+                <th>Concentracao</th>
+
+
+            </tr>
+        </thead>
+    </table>
+
+    <!-- Inicialização do DataTable -->
+    <script>
+        $(document).ready(function () {
+
+            $.getJSON('data.json', function (data) {
+                $('#table_id').DataTable({
+                    data: data,
+                    columns: [
+                        { data: 'Descricao Medicamento' },
+                        { data: 'Substancias' },
+                        {
+                            data: 'Indicacoes',
+                            render: function (data, type, row) {
+                                // Substitui \n por <br> para visualização no HTML
+                                return data.replace(/\n/g, '<br>')
+                            }
+                        },
+                        { data: 'Doses' },
+                        { data: 'Info Geral' },
+                        {
+                            data: 'Link Cognys Micromedex',
+                            render: function (data, type, row) {
+                                if (type === 'display' && data) {
+                                    return '<a href="' + data + '" target="_blank" rel="noopener noreferrer">Link</a>';
+                                }
+                                return data;
+                            }
+                        },
+                        { data: 'Esquema' },
+                        { data: 'Descricao Esquema' },
+                        { data: 'Codigo Medicamento' },
+                        { data: 'Codigo Produto' },
+                        { data: 'Descricao Produto' },
+                        { data: 'GCR' },
+                        { data: 'GFC' },
+                        { data: 'Nome ENG' },
+                        { data: 'Nome Via' },
+                        { data: 'Nome Forma' },
+                        { data: 'Concentracao' },
+                    ],
+
+                    dom: 'Qlfrtip',
+                    searchHighlight: true,
+                    pageLength: 25,
+                    deferRender: true,
+                    responsive: true
+                });
+            });
+        });
+    </script>
+
+</body>
+
+</html>
